@@ -1,7 +1,7 @@
 import { Alert, StyleSheet, TextInput, View } from "react-native";
 
 import Colors from "../constants/colors";
-import PrimaryButton from "../components/primary-button";
+import PrimaryButton from "../components/ui/primary-button";
 import symbolicateStackTrace from "react-native/Libraries/Core/Devtools/symbolicateStackTrace";
 import { useState } from "react";
 
