@@ -1,7 +1,8 @@
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, FlatList, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react";
 
 import Card from "../components/ui/card";
+import GuessLogItem from "../components/game/guess-log-item";
 import InstructionText from "../components/ui/instruction-text";
 import { Ionicons } from "@expo/vector-icons";
 import NumberContainer from "../components/game/number-container";
@@ -24,12 +25,18 @@ let maxBoundary = 100;
 const GameScreen = ({ userNumber, onGameOver }) => {
   const initGuess = generateRandomBetween(1, 100, userNumber);
   const [currGuess, setCurrGuess] = useState(initGuess);
+  const [guessRounds, setGuessRounds] = useState([initGuess]);
 
   useEffect(() => {
     if (currGuess === userNumber) {
-      onGameOver();
+      onGameOver(guessRoundsListLen);
     }
   }, [currGuess, userNumber, onGameOver]);
+
+  useEffect(() => {
+    minBoundary = 1;
+    maxBoundary = 100;
+  }, []);
 
   const nextGuessHandler = (direction) => {
     // lower
@@ -55,7 +62,10 @@ const GameScreen = ({ userNumber, onGameOver }) => {
       currGuess
     );
     setCurrGuess(newRndNumber);
+    setGuessRounds((prevGuessRounds) => [newRndNumber, ...prevGuessRounds]);
   };
+
+  const guessRoundsListLen = guessRounds.length;
 
   return (
     <View style={styles.screen}>
@@ -78,7 +88,21 @@ const GameScreen = ({ userNumber, onGameOver }) => {
           </View>
         </View>
       </Card>
-      {/* <View>Log Rounds</View> */}
+      <View style={styles.listContainer}>
+        {/* {guessRounds.map((guessRound) => (
+          <Text key={guessRound}>{guessRound}</Text>
+        ))} */}
+        <FlatList
+          data={guessRounds}
+          renderItem={(itemData) => (
+            <GuessLogItem
+              roundNumber={guessRoundsListLen - itemData.index}
+              guess={itemData.item}
+            />
+          )}
+          keyExtractor={(item) => item}
+        />
+      </View>
     </View>
   );
 };
@@ -98,5 +122,9 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flex: 1,
+  },
+  listContainer: {
+    flex: 1,
+    padding: 16,
   },
 });
